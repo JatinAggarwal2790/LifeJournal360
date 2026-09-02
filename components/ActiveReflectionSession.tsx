@@ -174,6 +174,111 @@ const MOODS = [
   { label: 'Restless', emoji: '🌪️' },
 ];
 
+const ARCHETYPE_THEMES: Record<
+  JournalArchetype,
+  {
+    label: string;
+    emoji: string;
+    accentColor: string;
+    badgeBg: string;
+    borderAccent: string;
+    ringColor: string;
+    placeholder: string;
+    desc: string;
+  }
+> = {
+  classic_reflection: {
+    label: 'Classic Reflection',
+    emoji: '🌿',
+    accentColor: 'text-lime-400',
+    badgeBg: 'bg-lime-400/15 text-lime-400 border-lime-400/30',
+    borderAccent: 'border-lime-500/40',
+    ringColor: 'focus:border-lime-400 focus:ring-1 focus:ring-lime-400/30',
+    placeholder: 'e.g. Evening mindful wind-down, Career reflections & vision...',
+    desc: 'Deep self-inquiry, freeform clarity, and thoughtful life exploration.',
+  },
+  travel_log: {
+    label: 'Travel Explorer',
+    emoji: '✈️',
+    accentColor: 'text-sky-400',
+    badgeBg: 'bg-sky-400/15 text-sky-400 border-sky-400/30',
+    borderAccent: 'border-sky-500/40',
+    ringColor: 'focus:border-sky-400 focus:ring-1 focus:ring-sky-400/30',
+    placeholder: 'e.g. Kyoto Day 2 – Arashiyama Bamboo Grove & Tea Houses...',
+    desc: 'Document destinations, itineraries, culture, moments, and GPS landmarks.',
+  },
+  food_diary: {
+    label: 'Food & Nutrition',
+    emoji: '🥗',
+    accentColor: 'text-amber-400',
+    badgeBg: 'bg-amber-400/15 text-amber-400 border-amber-400/30',
+    borderAccent: 'border-amber-500/40',
+    ringColor: 'focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30',
+    placeholder: 'e.g. High-protein meal log, mindful eating & hydration notes...',
+    desc: 'Log meals, caloric breakdown, water intake, cravings, and digestive energy.',
+  },
+  fitness_tracker: {
+    label: 'Fitness & Workout',
+    emoji: '🏋️',
+    accentColor: 'text-emerald-400',
+    badgeBg: 'bg-emerald-400/15 text-emerald-400 border-emerald-400/30',
+    borderAccent: 'border-emerald-500/40',
+    ringColor: 'focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400/30',
+    placeholder: 'e.g. Push Day Heavy Bench PR & 5km Tempo Run...',
+    desc: 'Track exercises, sets/reps, heart rate, recovery, and fitness milestones.',
+  },
+  pregnancy_milestones: {
+    label: 'Pregnancy Journey',
+    emoji: '🤰',
+    accentColor: 'text-rose-400',
+    badgeBg: 'bg-rose-400/15 text-rose-400 border-rose-400/30',
+    borderAccent: 'border-rose-500/40',
+    ringColor: 'focus:border-rose-400 focus:ring-1 focus:ring-rose-400/30',
+    placeholder: 'e.g. Week 24 Anatomy Scan & Nursery Prep Thoughts...',
+    desc: 'Monitor week-by-week baby size, symptoms, kicks, cravings, and medical visits.',
+  },
+  kids_journey: {
+    label: 'Parenting & Kids',
+    emoji: '👶',
+    accentColor: 'text-violet-400',
+    badgeBg: 'bg-violet-400/15 text-violet-400 border-violet-400/30',
+    borderAccent: 'border-violet-500/40',
+    ringColor: 'focus:border-violet-400 focus:ring-1 focus:ring-violet-400/30',
+    placeholder: 'e.g. First words, playful park afternoon & funny quotes...',
+    desc: 'Capture milestones, hilarious quotes, growth steps, and family routines.',
+  },
+  bullet_tasks: {
+    label: 'Bullet Journal',
+    emoji: '📓',
+    accentColor: 'text-indigo-400',
+    badgeBg: 'bg-indigo-400/15 text-indigo-400 border-indigo-400/30',
+    borderAccent: 'border-indigo-500/40',
+    ringColor: 'focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400/30',
+    placeholder: 'e.g. Weekly Rapid Sprint, Priority Tasks & Daily Log...',
+    desc: 'Rapid logging with tasks, events, notes, priorities, and daily tracking.',
+  },
+  multimedia_blog: {
+    label: 'Multimedia & Audio',
+    emoji: '🎨',
+    accentColor: 'text-purple-400',
+    badgeBg: 'bg-purple-400/15 text-purple-400 border-purple-400/30',
+    borderAccent: 'border-purple-500/40',
+    ringColor: 'focus:border-purple-400 focus:ring-1 focus:ring-purple-400/30',
+    placeholder: 'e.g. Photo essay from weekend hike, audio voice memo & Spotify vibe...',
+    desc: 'Rich multi-format entry with photos, voice dictation recordings, music, and GPS.',
+  },
+  custom: {
+    label: 'Custom Journal',
+    emoji: '🔮',
+    accentColor: 'text-teal-400',
+    badgeBg: 'bg-teal-400/15 text-teal-400 border-teal-400/30',
+    borderAccent: 'border-teal-500/40',
+    ringColor: 'focus:border-teal-400 focus:ring-1 focus:ring-teal-400/30',
+    placeholder: 'e.g. My Custom Journal Entry Title...',
+    desc: 'Customized goal tracking, personal logs, and custom-styled structure.',
+  },
+};
+
 export function ActiveReflectionSession({
   initialInteraction,
   onSaved,
@@ -258,6 +363,10 @@ export function ActiveReflectionSession({
   const [showPacingMenu, setShowPacingMenu] = useState(false);
   const [highlightNoteMessage, setHighlightNoteMessage] = useState<string | null>(null);
 
+  // Derived Archetype Theme & Meta for distinct visual styling across all 9 journal types
+  const currentArchetypeMeta =
+    ARCHETYPE_THEMES[archetype] || ARCHETYPE_THEMES.classic_reflection;
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const freeformTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -269,6 +378,40 @@ export function ActiveReflectionSession({
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isGenerating, engineMode]);
+
+  // Sync state when initialInteraction changes (e.g. user selects an entry from the side panel)
+  useEffect(() => {
+    if (initialInteraction) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSessionId(initialInteraction.id);
+      setTitle(initialInteraction.title || 'Untitled Reflection');
+      setEngineMode(initialInteraction.engineMode || 'non_ai');
+      setArchetype(initialInteraction.archetype || 'classic_reflection');
+      setCustomTypeName(initialInteraction.customTypeName);
+      setCustomTypeIcon(initialInteraction.customTypeIcon);
+      setEntryDate(
+        initialInteraction.entryDate ||
+          new Date(initialInteraction.createdAt).toISOString().split('T')[0]
+      );
+      setFreeformContent(
+        initialInteraction.freeformContent ||
+          initialInteraction.messages?.[0]?.content ||
+          ''
+      );
+      setBullets(initialInteraction.bullets || []);
+      setMultimedia(initialInteraction.multimedia || {});
+      setSpecializedData(initialInteraction.specializedData || {});
+      setMode(initialInteraction.reflectionMode || 'deep_reflection');
+      setMood(initialInteraction.mood || '');
+      setPacingPreference(initialInteraction.pacingPreference || 'auto');
+      setMessages(initialInteraction.messages || []);
+      setAiSummary(initialInteraction.aiSummary || '');
+      setJourneySynthesis(initialInteraction.journeySynthesis || null);
+      setCreatedAt(initialInteraction.createdAt || Date.now());
+      setSaveStatus('idle');
+      setSaveErrorMessage(null);
+    }
+  }, [initialInteraction]);
 
   // Count Insights & Actions for the badge
   const insightNotesCount =
@@ -920,49 +1063,176 @@ export function ActiveReflectionSession({
         </div>
       )}
 
-      {/* Main Title & Mood Selection Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-zinc-900/50 p-3 sm:p-4 rounded-2xl border border-zinc-800/80">
-        <div className="flex-1 min-w-0">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            onBlur={() => persistSession()}
-            placeholder="Journal Title (e.g. Planning my week & deep focus)..."
-            className="w-full bg-transparent text-base sm:text-lg font-black text-zinc-100 placeholder-zinc-500 outline-none border-b border-transparent focus:border-lime-500 pb-0.5"
-          />
+      {/* ========================================================================= */}
+      {/* 1. DISTINCT JOURNAL ENTRY NAME / TITLE CARD (FULL-WIDTH & DEDICATED)      */}
+      {/* ========================================================================= */}
+      <div
+        id="section-journal-entry-name"
+        className={`rounded-2xl border ${currentArchetypeMeta.borderAccent} bg-zinc-900/90 p-4 sm:p-5 shadow-lg backdrop-blur-md transition-all duration-200`}
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800/80 pb-3 mb-3">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-zinc-950 border border-zinc-800 text-base shadow-inner">
+              {customTypeIcon || currentArchetypeMeta.emoji}
+            </span>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className={`text-xs font-black uppercase tracking-wider ${currentArchetypeMeta.accentColor}`}>
+                  {customTypeName || currentArchetypeMeta.label}
+                </span>
+                <span className="rounded-full bg-zinc-800/80 border border-zinc-700/60 px-2 py-0.2 text-[10px] font-bold text-zinc-300">
+                  {engineMode === 'ai_companion' ? '🤖 AI Companion Active' : '✍️ Desk Writing Mode'}
+                </span>
+              </div>
+              <p className="text-[11px] text-zinc-400 font-medium">
+                {currentArchetypeMeta.desc}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-zinc-400 font-medium self-end sm:self-auto shrink-0">
+            <span className="flex items-center gap-1 bg-zinc-950 px-2.5 py-1 rounded-xl border border-zinc-800 text-[11px] text-zinc-300">
+              <Calendar className="h-3.5 w-3.5 text-zinc-500" />
+              {entryDate || 'Today'}
+            </span>
+            {saveStatus === 'saved' && (
+              <span className="flex items-center gap-1 text-lime-400 font-bold text-xs bg-lime-400/10 border border-lime-400/20 px-2.5 py-1 rounded-xl">
+                <Check className="h-3 w-3 stroke-[3]" /> Saved
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Mood chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-          <span className="text-[10px] font-bold uppercase text-zinc-500 shrink-0">Mood:</span>
-          {MOODS.map((m) => (
+        {/* Large, High-Visibility Title Input with Clear Label */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label
+              htmlFor="journal-entry-title-input"
+              className="block text-[11px] font-extrabold uppercase tracking-wider text-zinc-300"
+            >
+              Journal Entry Name <span className="text-lime-400">*</span>
+            </label>
+            <span className="text-[11px] text-zinc-500 font-medium">
+              Click anytime to rename • Saved with your reflection
+            </span>
+          </div>
+
+          <div className="relative flex items-center">
+            <div className="absolute left-3.5 flex items-center pointer-events-none text-zinc-500">
+              <PenTool className="h-4 w-4" />
+            </div>
+            <input
+              id="journal-entry-title-input"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              onBlur={() => persistSession()}
+              placeholder={currentArchetypeMeta.placeholder}
+              className={`w-full rounded-xl bg-zinc-950/90 border border-zinc-800 pl-10 pr-10 py-2.5 text-base sm:text-lg font-black text-zinc-100 placeholder-zinc-500 outline-none ${currentArchetypeMeta.ringColor} transition shadow-inner`}
+            />
+            {title && (
+              <button
+                type="button"
+                onClick={() => {
+                  setTitle('');
+                }}
+                className="absolute right-3 p-1 text-zinc-500 hover:text-zinc-300 rounded-lg hover:bg-zinc-800 transition"
+                title="Clear entry title"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* 2. DISTINCT MOOD & EMOTIONAL STATE SELECTOR (SEPARATE CONTAINER)          */}
+      {/* ========================================================================= */}
+      <div
+        id="section-mood-selection"
+        className="rounded-2xl border border-zinc-800/80 bg-zinc-900/70 p-3.5 sm:p-4 shadow-md backdrop-blur-md"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-400/10 border border-amber-400/20 text-amber-400 text-sm">
+              <Smile className="h-4 w-4" />
+            </span>
+            <div>
+              <h4 className="text-xs font-black text-zinc-200 uppercase tracking-wide flex items-center gap-2">
+                <span>Mood &amp; State of Mind</span>
+                {mood ? (
+                  <span className="text-[11px] font-black text-lime-400 bg-lime-400/15 border border-lime-400/30 px-2.5 py-0.5 rounded-full capitalize">
+                    Current: {mood}
+                  </span>
+                ) : (
+                  <span className="text-[10px] text-zinc-500 font-normal lowercase">
+                    (optional reflection vibe)
+                  </span>
+                )}
+              </h4>
+              <p className="text-[11px] text-zinc-400">
+                Tag your emotional rhythm for deeper synthesis &amp; timeline analytics.
+              </p>
+            </div>
+          </div>
+
+          {mood && (
             <button
-              key={m.label}
               type="button"
               onClick={() => {
-                const newMood = mood === m.label ? '' : m.label;
-                setMood(newMood);
+                setMood('');
                 persistSession(
                   messages,
                   title,
                   mode,
-                  newMood,
+                  '',
                   pacingPreference,
                   aiSummary,
                   journeySynthesis
                 );
               }}
-              className={`flex items-center gap-1 rounded-xl px-2.5 py-1 text-xs font-bold transition shrink-0 ${
-                mood === m.label
-                  ? 'bg-lime-400 text-zinc-950 shadow-sm'
-                  : 'bg-zinc-950 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 border border-zinc-800'
-              }`}
+              className="text-xs font-bold text-zinc-400 hover:text-red-400 transition flex items-center gap-1 self-start sm:self-auto bg-zinc-950 px-2.5 py-1 rounded-lg border border-zinc-800"
             >
-              <span>{m.emoji}</span>
-              <span>{m.label}</span>
+              <X className="h-3.5 w-3.5" />
+              <span>Clear Mood</span>
             </button>
-          ))}
+          )}
+        </div>
+
+        {/* Mood Chips — Flex wrap layout preventing any compression or truncation */}
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          {MOODS.map((m) => {
+            const isSelected = mood === m.label;
+            return (
+              <button
+                key={m.label}
+                type="button"
+                onClick={() => {
+                  const newMood = isSelected ? '' : m.label;
+                  setMood(newMood);
+                  persistSession(
+                    messages,
+                    title,
+                    mode,
+                    newMood,
+                    pacingPreference,
+                    aiSummary,
+                    journeySynthesis
+                  );
+                }}
+                className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition shadow-sm active:scale-95 ${
+                  isSelected
+                    ? 'bg-lime-400 text-zinc-950 font-black shadow-md ring-2 ring-lime-300'
+                    : 'bg-zinc-950 text-zinc-300 hover:bg-zinc-800 hover:text-white border border-zinc-800'
+                }`}
+              >
+                <span className="text-sm">{m.emoji}</span>
+                <span>{m.label}</span>
+                {isSelected && <Check className="h-3 w-3 stroke-[3]" />}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -998,10 +1268,10 @@ export function ActiveReflectionSession({
                       ? 'bg-lime-400 text-zinc-950 shadow-md ring-1 ring-lime-300'
                       : 'text-zinc-400 hover:text-zinc-200'
                   }`}
-                  title="Side-by-side: Text Notes on left, Tracker/Media on right"
+                  title="Spacious rows: Compact notes on top, Full-width milestone logs and trackers below"
                 >
                   <Layout className="h-3.5 w-3.5" />
-                  <span>⚡ Split View (Notes + Tracker)</span>
+                  <span>⚡ Writing + Tracker Rows</span>
                 </button>
 
                 {(archetype === 'food_diary' ||
@@ -1208,81 +1478,118 @@ export function ActiveReflectionSession({
               </div>
             </div>
           ) : writingViewMode === 'split' ? (
-            /* SPLIT VIEW: Side-by-Side (Writing Desk on Left + Tracker on Right) */
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-              {/* Left Column: Focused Writing Desk */}
-              <div className="lg:col-span-7 space-y-3.5">
-                <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-4 backdrop-blur-md shadow-lg space-y-3">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800/80 pb-2.5">
-                    <div className="flex items-center gap-2">
-                      <PenTool className="h-4 w-4 text-emerald-400" />
-                      <span className="text-xs font-extrabold text-zinc-200">
-                        Writing Space ({wordCount} words)
-                      </span>
-                    </div>
-
-                    {/* Quick Actions: Voice Dictation & Pin */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <VoiceDictationButton
-                        onTranscript={(txt) => {
-                          setFreeformContent((prev) => (prev ? `${prev}\n${txt}` : txt));
-                        }}
-                        onAudioRecorded={(audio) => {
-                          const currentAudio = multimedia.audioNotes || [];
-                          const updatedMm = {
-                            ...multimedia,
-                            audioNotes: [
-                              ...currentAudio,
-                              {
-                                id: audio.id,
-                                url: audio.url,
-                                durationSeconds: audio.durationSeconds,
-                                transcript: audio.transcript,
-                                recordedAt: Date.now(),
-                                label: `Voice Note #${currentAudio.length + 1}`,
-                              },
-                            ],
-                          };
-                          setMultimedia(updatedMm);
-                          if (audio.transcript) {
-                            setFreeformContent((prev) => (prev ? `${prev}\n${audio.transcript}` : audio.transcript || ''));
-                          }
-                        }}
-                        variant="subtle"
-                        size="sm"
-                      />
-
-                      <button
-                        type="button"
-                        onClick={() => handleMoveSelectedText('thought')}
-                        className="inline-flex items-center gap-1 rounded-lg bg-amber-400/15 border border-amber-400/30 px-2.5 py-1 text-xs font-bold text-amber-300 hover:bg-amber-400/25 transition"
-                        title="Highlight text to pin as an Insight Sticky Note"
-                      >
-                        <Lightbulb className="h-3 w-3" />
-                        <span>Pin Insight</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleMoveSelectedText('action')}
-                        className="inline-flex items-center gap-1 rounded-lg bg-lime-400/15 border border-lime-400/30 px-2.5 py-1 text-xs font-bold text-lime-300 hover:bg-lime-400/25 transition"
-                        title="Highlight text to pin as an Action Commitment"
-                      >
-                        <Sparkles className="h-3 w-3" />
-                        <span>Pin Action</span>
-                      </button>
-                    </div>
+            /* STACKED ROWS VIEW: Compact Writing Row on Top + Full-Width Tracker/Milestones on Bottom */
+            <div className="space-y-4">
+              {/* Row 1: Compact, Space-Efficient Writing Desk */}
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-3.5 sm:p-4 backdrop-blur-md shadow-md space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-zinc-800/80 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <PenTool className="h-4 w-4 text-emerald-400" />
+                    <span className="text-xs font-extrabold text-zinc-200">
+                      Quick Reflection &amp; Notes Space ({wordCount} words)
+                    </span>
+                    <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.2 text-[10px] font-bold text-emerald-300">
+                      Compact Writing Row
+                    </span>
                   </div>
 
-                  {/* Direct GPS tag on the entry */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 bg-zinc-950/80 p-2 rounded-xl border border-zinc-800/80 text-xs">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <MapPin className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                      <input
-                        type="text"
-                        value={multimedia.location?.placeName || ''}
-                        onChange={(e) => {
-                          const updatedLoc = { ...(multimedia.location || {}), placeName: e.target.value };
-                          const updatedMm = { ...multimedia, location: updatedLoc };
+                  {/* Quick Actions: Voice Dictation & Pin */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <VoiceDictationButton
+                      onTranscript={(txt) => {
+                        setFreeformContent((prev) => (prev ? `${prev}\n${txt}` : txt));
+                      }}
+                      onAudioRecorded={(audio) => {
+                        const currentAudio = multimedia.audioNotes || [];
+                        const updatedMm = {
+                          ...multimedia,
+                          audioNotes: [
+                            ...currentAudio,
+                            {
+                              id: audio.id,
+                              url: audio.url,
+                              durationSeconds: audio.durationSeconds,
+                              transcript: audio.transcript,
+                              recordedAt: Date.now(),
+                              label: `Voice Note #${currentAudio.length + 1}`,
+                            },
+                          ],
+                        };
+                        setMultimedia(updatedMm);
+                        if (audio.transcript) {
+                          setFreeformContent((prev) => (prev ? `${prev}\n${audio.transcript}` : audio.transcript || ''));
+                        }
+                      }}
+                      variant="subtle"
+                      size="sm"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => handleMoveSelectedText('thought')}
+                      className="inline-flex items-center gap-1 rounded-lg bg-amber-400/15 border border-amber-400/30 px-2.5 py-1 text-xs font-bold text-amber-300 hover:bg-amber-400/25 transition"
+                      title="Highlight text to pin as an Insight Sticky Note"
+                    >
+                      <Lightbulb className="h-3 w-3" />
+                      <span>Pin Insight</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleMoveSelectedText('action')}
+                      className="inline-flex items-center gap-1 rounded-lg bg-lime-400/15 border border-lime-400/30 px-2.5 py-1 text-xs font-bold text-lime-300 hover:bg-lime-400/25 transition"
+                      title="Highlight text to pin as an Action Commitment"
+                    >
+                      <Sparkles className="h-3 w-3" />
+                      <span>Pin Action</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Direct GPS tag on the entry */}
+                <div className="flex flex-wrap items-center justify-between gap-2 bg-zinc-950/80 p-2 rounded-xl border border-zinc-800/80 text-xs">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <MapPin className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                    <input
+                      type="text"
+                      value={multimedia.location?.placeName || ''}
+                      onChange={(e) => {
+                        const updatedLoc = { ...(multimedia.location || {}), placeName: e.target.value };
+                        const updatedMm = { ...multimedia, location: updatedLoc };
+                        setMultimedia(updatedMm);
+                        persistSession(
+                          messages,
+                          title,
+                          mode,
+                          mood,
+                          pacingPreference,
+                          aiSummary,
+                          journeySynthesis,
+                          freeformContent,
+                          bullets,
+                          updatedMm
+                        );
+                      }}
+                      placeholder="Tag GPS / Location on this reflection..."
+                      className="bg-transparent text-xs text-zinc-200 placeholder-zinc-500 outline-none w-full"
+                    />
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleDetectEntryLocation}
+                      disabled={isDetectingEntryGps}
+                      className="flex items-center gap-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25 transition disabled:opacity-50"
+                      title="Auto-detect current GPS location for this entry"
+                    >
+                      <Compass className="h-3 w-3" />
+                      <span>{isDetectingEntryGps ? 'Detecting...' : 'Auto GPS'}</span>
+                    </button>
+                    {multimedia.location?.placeName && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updatedMm = { ...multimedia, location: undefined };
                           setMultimedia(updatedMm);
                           persistSession(
                             messages,
@@ -1297,85 +1604,51 @@ export function ActiveReflectionSession({
                             updatedMm
                           );
                         }}
-                        placeholder="Tag GPS / Location on this reflection..."
-                        className="bg-transparent text-xs text-zinc-200 placeholder-zinc-500 outline-none w-full"
-                      />
-                    </div>
-
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={handleDetectEntryLocation}
-                        disabled={isDetectingEntryGps}
-                        className="flex items-center gap-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-1 text-[11px] font-bold text-emerald-300 hover:bg-emerald-500/25 transition disabled:opacity-50"
-                        title="Auto-detect current GPS location for this entry"
+                        className="text-xs text-zinc-500 hover:text-rose-400 px-1"
+                        title="Remove location tag"
                       >
-                        <Compass className="h-3 w-3" />
-                        <span>{isDetectingEntryGps ? 'Detecting...' : 'Auto GPS'}</span>
+                        &times;
                       </button>
-                      {multimedia.location?.placeName && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const updatedMm = { ...multimedia, location: undefined };
-                            setMultimedia(updatedMm);
-                            persistSession(
-                              messages,
-                              title,
-                              mode,
-                              mood,
-                              pacingPreference,
-                              aiSummary,
-                              journeySynthesis,
-                              freeformContent,
-                              bullets,
-                              updatedMm
-                            );
-                          }}
-                          className="text-xs text-zinc-500 hover:text-rose-400 px-1"
-                          title="Remove location tag"
-                        >
-                          &times;
-                        </button>
-                      )}
-                    </div>
+                    )}
                   </div>
+                </div>
 
-                  {/* Compact Textarea */}
-                  <textarea
-                    ref={freeformTextareaRef}
-                    value={freeformContent}
-                    onChange={(e) => setFreeformContent(e.target.value)}
-                    onBlur={() => persistSession()}
-                    placeholder="Write your journal entry, notes, or thoughts freely... (You can write text alone or fill in the tracker on the right anytime!)"
-                    rows={8}
-                    className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-3.5 text-sm leading-relaxed text-zinc-100 placeholder-zinc-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                  />
+                {/* Compact Textarea with high readability */}
+                <textarea
+                  ref={freeformTextareaRef}
+                  value={freeformContent}
+                  onChange={(e) => setFreeformContent(e.target.value)}
+                  onBlur={() => persistSession()}
+                  placeholder="Jot quick notes or reflections here... (Full-width tracker and milestone forms are active below in spacious rows!)"
+                  rows={4}
+                  className="w-full rounded-xl border border-zinc-800 bg-zinc-950 p-3 text-xs sm:text-sm leading-relaxed text-zinc-100 placeholder-zinc-500 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 transition"
+                />
 
-                  {/* Submit / Save Bar in Split Left Column */}
-                  <div className="flex items-center justify-between pt-2 border-t border-zinc-800/80">
-                    <span className="text-[10px] text-zinc-500">Write text alone or use tracker</span>
-                    <button
-                      type="button"
-                      onClick={() => persistSession()}
-                      disabled={saveStatus === 'saving'}
-                      className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-emerald-400 transition shadow-sm disabled:opacity-50"
-                    >
-                      {saveStatus === 'saving' ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      ) : saveStatus === 'saved' ? (
-                        <CheckCircle2 className="h-3 w-3" />
-                      ) : (
-                        <Save className="h-3 w-3" />
-                      )}
-                      <span>{saveStatus === 'saved' ? 'Saved ✓' : 'Save Notes'}</span>
-                    </button>
-                  </div>
+                {/* Compact Submit / Save Bar in Top Writing Row */}
+                <div className="flex items-center justify-between pt-2 border-t border-zinc-800/80">
+                  <span className="text-[10px] text-zinc-500">
+                    Compact notes row on top • Expansive milestone logs &amp; trackers below
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => persistSession()}
+                    disabled={saveStatus === 'saving'}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-extrabold text-zinc-950 hover:bg-emerald-400 transition shadow-sm disabled:opacity-50"
+                  >
+                    {saveStatus === 'saving' ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : saveStatus === 'saved' ? (
+                      <CheckCircle2 className="h-3 w-3" />
+                    ) : (
+                      <Save className="h-3 w-3" />
+                    )}
+                    <span>{saveStatus === 'saved' ? 'Saved ✓' : 'Save Notes'}</span>
+                  </button>
                 </div>
               </div>
 
-              {/* Right Column: Specialized Tracker / Multimedia Section */}
-              <div className="lg:col-span-5 space-y-3.5">
+              {/* Row 2: Full-Width Milestone Logs / Specialized Tracker Section */}
+              <div className="w-full space-y-3.5">
                 {archetype === 'multimedia_blog' ? (
                   <MultimediaSection
                     multimedia={multimedia}

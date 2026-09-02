@@ -98,6 +98,13 @@ export interface SpecializedTrackingData {
     symptoms?: string[];
     kicksCount?: number;
     notes?: string;
+    milestoneLogs?: Array<{
+      id: string;
+      title: string;
+      week?: number;
+      date?: string;
+      notes?: string;
+    }>;
   };
   travel?: {
     destination?: string;
@@ -112,6 +119,13 @@ export interface SpecializedTrackingData {
     milestone?: string;
     funnyQuote?: string;
     notes?: string;
+    milestoneLogs?: Array<{
+      id: string;
+      title: string;
+      category?: string;
+      date?: string;
+      notes?: string;
+    }>;
   };
 }
 

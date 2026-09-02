@@ -233,26 +233,98 @@ export function ChooseJournalingHub({
   const [customGoal, setCustomGoal] = useState('');
   const [customTitleInput, setCustomTitleInput] = useState('');
 
+  // Quick Start Entry Title Modal State
+  const [titleModalConfig, setTitleModalConfig] = useState<{
+    archetype: JournalArchetype;
+    label: string;
+    emoji: string;
+    tagline: string;
+    sampleTitle: string;
+    accentColor: string;
+    buttonColor: string;
+    customTypeName?: string;
+    customTypeIcon?: string;
+  } | null>(null);
+  const [entryTitleInput, setEntryTitleInput] = useState('');
+
   const todayFormatted = new Date().toLocaleDateString(undefined, {
     month: 'short',
     day: 'numeric',
   });
 
-  const handleLaunchArchetype = (archetype: JournalArchetype, sampleTitle: string) => {
-    const generatedTitle = `${sampleTitle} – ${todayFormatted}`;
-    onSelectJourney({
-      archetype,
-      title: generatedTitle,
+  const getDistinctDefaultTitle = (archetype: JournalArchetype, baseTitle: string, customName?: string) => {
+    const existingCount = interactions.filter((i) => {
+      const isArch = (i.archetype || 'classic_reflection') === archetype;
+      if (archetype === 'custom' && customName) {
+        return isArch && i.customTypeName === customName;
+      }
+      return isArch;
+    }).length;
+
+    const prefix = customName || baseTitle;
+    if (existingCount > 0) {
+      return `${prefix} #${existingCount + 1} – ${todayFormatted}`;
+    }
+    return `${prefix} – ${todayFormatted}`;
+  };
+
+  const handleOpenTitleModal = (opt: JournalTypeCard) => {
+    const defaultTitle = getDistinctDefaultTitle(opt.id, opt.label);
+    setEntryTitleInput(defaultTitle);
+    setTitleModalConfig({
+      archetype: opt.id,
+      label: opt.label,
+      emoji: opt.emoji,
+      tagline: opt.tagline,
+      sampleTitle: opt.sampleTitle,
+      accentColor: opt.accentColor,
+      buttonColor: opt.buttonColor,
     });
   };
 
-  const handleLaunchPresetCustom = (preset: typeof CUSTOM_TYPE_PRESETS[0]) => {
-    const generatedTitle = `${preset.name} – ${todayFormatted}`;
-    onSelectJourney({
+  const handleOpenPresetTitleModal = (preset: typeof CUSTOM_TYPE_PRESETS[0]) => {
+    const defaultTitle = getDistinctDefaultTitle('custom', preset.name, preset.name);
+    setEntryTitleInput(defaultTitle);
+    setTitleModalConfig({
       archetype: 'custom',
+      label: preset.name,
+      emoji: preset.emoji,
+      tagline: preset.desc,
+      sampleTitle: preset.name,
+      accentColor: 'text-purple-400',
+      buttonColor: 'bg-purple-500 text-white hover:bg-purple-400',
       customTypeName: preset.name,
       customTypeIcon: preset.emoji,
-      title: generatedTitle,
+    });
+  };
+
+  const handleConfirmTitleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!titleModalConfig) return;
+
+    const finalTitle = entryTitleInput.trim()
+      ? entryTitleInput.trim()
+      : getDistinctDefaultTitle(
+          titleModalConfig.archetype,
+          titleModalConfig.label,
+          titleModalConfig.customTypeName
+        );
+
+    onSelectJourney({
+      archetype: titleModalConfig.archetype,
+      customTypeName: titleModalConfig.customTypeName,
+      customTypeIcon: titleModalConfig.customTypeIcon,
+      title: finalTitle,
+    });
+
+    setTitleModalConfig(null);
+  };
+
+  const handleLaunchArchetypeDirect = (archetype: JournalArchetype, sampleTitle: string) => {
+    const defaultTitle = getDistinctDefaultTitle(archetype, sampleTitle);
+    onSelectJourney({
+      archetype,
+      title: defaultTitle,
     });
   };
 
@@ -355,7 +427,7 @@ export function ChooseJournalingHub({
                   key={opt.id}
                   type="button"
                   onClick={() => {
-                    handleLaunchArchetype(opt.id, opt.sampleTitle);
+                    handleOpenTitleModal(opt);
                   }}
                   className={`flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-bold transition shrink-0 border bg-zinc-950 text-zinc-300 border-zinc-800 hover:border-lime-500/50 hover:text-white group`}
                 >
@@ -470,7 +542,7 @@ export function ChooseJournalingHub({
                   {/* Compact Action Footer */}
                   <button
                     type="button"
-                    onClick={() => handleLaunchArchetype(item.id, item.sampleTitle)}
+                    onClick={() => handleOpenTitleModal(item)}
                     className={`w-full flex items-center justify-center gap-1.5 rounded-xl py-2 px-3 text-xs font-black transition-all shadow-sm active:scale-98 ${item.buttonColor}`}
                   >
                     <span>Start {item.label.split(' ')[0]} Journal</span>
@@ -513,7 +585,7 @@ export function ChooseJournalingHub({
                     <button
                       key={idx}
                       type="button"
-                      onClick={() => handleLaunchPresetCustom(p)}
+                      onClick={() => handleOpenPresetTitleModal(p)}
                       className="inline-flex items-center gap-1 rounded-md bg-zinc-950 border border-zinc-800 px-1.5 py-0.5 text-[10px] text-zinc-300 hover:border-purple-400 hover:text-purple-200 transition"
                     >
                       <span>{p.emoji}</span>
@@ -535,6 +607,72 @@ export function ChooseJournalingHub({
           </div>
         </div>
       </div>
+
+      {/* Modal: Quick Start Entry Title */}
+      {titleModalConfig && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="relative w-full max-w-md rounded-3xl border border-zinc-700 bg-zinc-950 p-6 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3 mb-4">
+              <div className="flex items-center gap-2.5">
+                <span className="text-2xl">{titleModalConfig.emoji}</span>
+                <div>
+                  <h2 className="text-base font-black text-white">
+                    Start {titleModalConfig.label}
+                  </h2>
+                  <p className="text-xs text-zinc-400">
+                    {titleModalConfig.tagline}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setTitleModalConfig(null)}
+                className="rounded-full p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleConfirmTitleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-zinc-300 mb-1.5">
+                  Journal Entry Title <span className="text-lime-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  autoFocus
+                  required
+                  value={entryTitleInput}
+                  onChange={(e) => setEntryTitleInput(e.target.value)}
+                  placeholder={`e.g. ${titleModalConfig.sampleTitle} – Tokyo Highlights, Leg PR, etc.`}
+                  className="w-full rounded-2xl border border-zinc-700 bg-zinc-900 py-2.5 px-3.5 text-sm font-bold text-white placeholder-zinc-500 focus:border-lime-400 focus:outline-none"
+                />
+                <p className="mt-1.5 text-[11px] text-zinc-400">
+                  Customizing this title will help you easily find and group your entries in your side panel.
+                </p>
+              </div>
+
+              {/* Submit / Direct buttons */}
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-800">
+                <button
+                  type="button"
+                  onClick={() => setTitleModalConfig(null)}
+                  className="rounded-xl bg-zinc-800 px-3.5 py-2 text-xs font-bold text-zinc-300 hover:bg-zinc-700 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-black shadow-md transition ${titleModalConfig.buttonColor}`}
+                >
+                  <span>Start Entry</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Modal: Create Custom Journaling Type */}
       {showCustomModal && (

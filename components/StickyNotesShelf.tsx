@@ -152,8 +152,8 @@ export function StickyNotesShelf({
 }: StickyNotesShelfProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('all');
-  const [viewMode, setViewMode] = useState<'grouped' | 'flat'>('grouped');
-  const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
+  const [groupingMode, setGroupingMode] = useState<'date' | 'category' | 'flat'>('date');
+  const [collapsedGroups, setCollapsedGroups] = useState<Record<string, boolean>>({});
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
@@ -203,17 +203,76 @@ export function StickyNotesShelf({
       const q = searchQuery.toLowerCase();
       const titleMatch = (item.title || '').toLowerCase().includes(q);
       const moodMatch = (item.mood || '').toLowerCase().includes(q);
-      const contentMatch = item.messages.some((m) => m.content.toLowerCase().includes(q));
+      const contentMatch = (item.freeformContent || '').toLowerCase().includes(q) || item.messages.some((m) => m.content.toLowerCase().includes(q));
       const headlineMatch = (item.journeySynthesis?.headline || '').toLowerCase().includes(q);
       const customTypeMatch = (item.customTypeName || '').toLowerCase().includes(q);
-      return titleMatch || moodMatch || contentMatch || headlineMatch || customTypeMatch;
+      const dateMatch = (item.entryDate || '').toLowerCase().includes(q);
+      return titleMatch || moodMatch || contentMatch || headlineMatch || customTypeMatch || dateMatch;
     });
   }, [interactions, searchQuery, selectedCategoryFilter]);
 
-  const toggleCategoryCollapse = (categoryKey: string) => {
-    setCollapsedCategories((prev) => ({
+  // Helper to compute date group metadata
+  const getDateGroupMeta = (item: JournalInteraction) => {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+    const itemDateStr = item.entryDate || new Date(item.createdAt).toISOString().split('T')[0];
+
+    if (itemDateStr === todayStr) {
+      return {
+        key: 'today',
+        label: 'Today',
+        sublabel: now.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        order: 0,
+      };
+    }
+    if (itemDateStr === yesterdayStr) {
+      return {
+        key: 'yesterday',
+        label: 'Yesterday',
+        sublabel: yesterday.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+        order: 1,
+      };
+    }
+
+    const d = new Date(itemDateStr + 'T12:00:00');
+    return {
+      key: itemDateStr,
+      label: isNaN(d.getTime()) ? itemDateStr : d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      sublabel: isNaN(d.getTime()) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', weekday: 'short' }),
+      order: 2 + (now.getTime() - (isNaN(d.getTime()) ? item.createdAt : d.getTime())),
+    };
+  };
+
+  // Group filtered items by Date
+  const dateGroupsData = useMemo(() => {
+    const map = new Map<string, { key: string; label: string; sublabel: string; order: number; items: JournalInteraction[] }>();
+
+    filteredInteractions.forEach((item) => {
+      const meta = getDateGroupMeta(item);
+      if (!map.has(meta.key)) {
+        map.set(meta.key, {
+          key: meta.key,
+          label: meta.label,
+          sublabel: meta.sublabel,
+          order: meta.order,
+          items: [],
+        });
+      }
+      map.get(meta.key)!.items.push(item);
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.order - b.order);
+  }, [filteredInteractions]);
+
+  const toggleGroupCollapse = (groupKey: string) => {
+    setCollapsedGroups((prev) => ({
       ...prev,
-      [categoryKey]: !prev[categoryKey],
+      [groupKey]: !prev[groupKey],
     }));
   };
 
@@ -439,46 +498,61 @@ export function StickyNotesShelf({
           </div>
         </div>
 
-        {/* Search Bar & View Mode Toggle */}
-        <div className="p-3 border-b border-zinc-800/70 space-y-2">
+        {/* Search Bar & Grouping Mode Toggle */}
+        <div className="p-3 border-b border-zinc-800/70 space-y-2.5">
           <div className="relative">
             <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-zinc-500" />
             <input
               type="text"
-              placeholder="Search categorized notes..."
+              placeholder="Search by title, content, mood, date..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full rounded-xl border border-zinc-800 bg-zinc-900/90 py-1.5 pl-8 pr-3 text-xs text-zinc-200 placeholder-zinc-500 focus:border-amber-400 focus:outline-none"
             />
           </div>
 
-          {/* View mode buttons (Grouped by Category vs All Flat) */}
-          <div className="flex items-center justify-between text-[11px] pt-1">
-            <span className="text-zinc-400 font-medium">Layout:</span>
-            <div className="flex items-center rounded-lg bg-zinc-900 border border-zinc-800 p-0.5">
+          {/* Grouping mode buttons: By Date vs By Category vs All Flat */}
+          <div className="flex items-center justify-between text-[11px] pt-0.5">
+            <span className="text-zinc-400 font-medium">Group by:</span>
+            <div className="flex items-center rounded-xl bg-zinc-900 border border-zinc-800 p-0.5 shadow-inner">
               <button
                 type="button"
-                onClick={() => setViewMode('grouped')}
-                className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold transition ${
-                  viewMode === 'grouped'
-                    ? 'bg-zinc-800 text-white shadow-sm'
+                onClick={() => setGroupingMode('date')}
+                className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-bold transition ${
+                  groupingMode === 'date'
+                    ? 'bg-amber-400 text-zinc-950 shadow-sm'
                     : 'text-zinc-400 hover:text-zinc-200'
                 }`}
+                title="Group entries by Date (Today, Yesterday, Past Dates)"
               >
-                <FolderOpen className="h-3 w-3" />
-                <span>Categories</span>
+                <Clock className="h-3 w-3" />
+                <span>By Date</span>
               </button>
               <button
                 type="button"
-                onClick={() => setViewMode('flat')}
-                className={`flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold transition ${
-                  viewMode === 'flat'
-                    ? 'bg-zinc-800 text-white shadow-sm'
+                onClick={() => setGroupingMode('category')}
+                className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-bold transition ${
+                  groupingMode === 'category'
+                    ? 'bg-amber-400 text-zinc-950 shadow-sm'
                     : 'text-zinc-400 hover:text-zinc-200'
                 }`}
+                title="Group entries by Journal Type"
+              >
+                <FolderOpen className="h-3 w-3" />
+                <span>By Type</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setGroupingMode('flat')}
+                className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-bold transition ${
+                  groupingMode === 'flat'
+                    ? 'bg-amber-400 text-zinc-950 shadow-sm'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+                title="Flat list of all notes"
               >
                 <Layers className="h-3 w-3" />
-                <span>All Stream</span>
+                <span>All</span>
               </button>
             </div>
           </div>
@@ -491,11 +565,11 @@ export function StickyNotesShelf({
             onClick={() => setSelectedCategoryFilter('all')}
             className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold transition ${
               selectedCategoryFilter === 'all'
-                ? 'bg-amber-400 text-zinc-950'
+                ? 'bg-amber-400 text-zinc-950 shadow-sm font-black'
                 : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:text-zinc-200'
             }`}
           >
-            All ({interactions.length})
+            🌟 All ({interactions.length})
           </button>
 
           {categoriesData.map((cat) => {
@@ -507,12 +581,12 @@ export function StickyNotesShelf({
                 onClick={() => setSelectedCategoryFilter(isSelected ? 'all' : cat.key)}
                 className={`shrink-0 flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-bold transition ${
                   isSelected
-                    ? 'bg-zinc-100 text-zinc-950 shadow-sm'
+                    ? 'bg-zinc-100 text-zinc-950 shadow-sm font-black'
                     : 'bg-zinc-900 text-zinc-400 border border-zinc-800 hover:text-zinc-200'
                 }`}
               >
                 <span>{cat.emoji}</span>
-                <span className="truncate max-w-[80px]">{cat.label}</span>
+                <span className="truncate max-w-[85px]">{cat.label}</span>
                 <span className="rounded-full bg-black/20 px-1 text-[9px] font-black">
                   {cat.count}
                 </span>
@@ -522,7 +596,7 @@ export function StickyNotesShelf({
         </div>
 
         {/* Sticky Notes Scroll Area */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-zinc-950/40">
+        <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 bg-zinc-950/40">
           {/* Quick Create Note Card */}
           <button
             type="button"
@@ -530,17 +604,69 @@ export function StickyNotesShelf({
             className="w-full rounded-2xl border-2 border-dashed border-zinc-800 p-3 text-center text-xs font-bold text-zinc-400 hover:border-lime-400 hover:text-lime-400 hover:bg-lime-950/10 transition flex items-center justify-center gap-2 group"
           >
             <Plus className="h-4 w-4 group-hover:scale-110 transition-transform" />
-            <span>Choose &amp; Start New Journey</span>
+            <span>Start New Journal Entry</span>
           </button>
 
           {filteredInteractions.length === 0 ? (
             <div className="py-8 text-center text-xs text-zinc-500">
               {searchQuery
-                ? 'No matching sticky notes found.'
-                : 'No reflections in this category yet. Start one above!'}
+                ? 'No matching journal entries found.'
+                : 'No entries in this selection yet. Start one above!'}
             </div>
-          ) : viewMode === 'grouped' ? (
-            /* Grouped by Category View with Accordions */
+          ) : groupingMode === 'date' ? (
+            /* DATE-BASED GROUPING VIEW (Accordion per Day) */
+            dateGroupsData.map((group) => {
+              const isCollapsed = !!collapsedGroups[group.key];
+
+              return (
+                <div
+                  key={group.key}
+                  className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 overflow-hidden shadow-sm"
+                >
+                  {/* Date Accordion Header */}
+                  <div
+                    onClick={() => toggleGroupCollapse(group.key)}
+                    className="flex items-center justify-between p-3 bg-zinc-900/80 hover:bg-zinc-850 cursor-pointer transition select-none border-b border-zinc-800/50"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-400/15 text-amber-400 border border-amber-400/30 text-xs">
+                        <Clock className="h-3.5 w-3.5" />
+                      </span>
+                      <div>
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="text-xs font-black text-zinc-100">{group.label}</h4>
+                          {group.sublabel && (
+                            <span className="text-[10px] text-zinc-400 font-medium">
+                              • {group.sublabel}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <span className="rounded-full bg-zinc-800 border border-zinc-700 px-2 py-0.5 text-[10px] font-bold text-amber-300 ml-1">
+                        {group.items.length} {group.items.length === 1 ? 'entry' : 'entries'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <ChevronDown
+                        className={`h-4 w-4 text-zinc-400 transition-transform duration-200 ${
+                          isCollapsed ? '-rotate-90' : 'rotate-0'
+                        }`}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Accordion Content: Sticky Notes in this Date */}
+                  {!isCollapsed && (
+                    <div className="p-3 space-y-3 bg-zinc-950/60">
+                      {group.items.map((item, idx) => renderStickyNoteCard(item, idx))}
+                    </div>
+                  )}
+                </div>
+              );
+            })
+          ) : groupingMode === 'category' ? (
+            /* CATEGORY-BASED GROUPING VIEW */
             categoriesData
               .filter((cat) => {
                 if (selectedCategoryFilter !== 'all') {
@@ -555,6 +681,7 @@ export function StickyNotesShelf({
                   return (
                     (item.title || '').toLowerCase().includes(q) ||
                     (item.mood || '').toLowerCase().includes(q) ||
+                    (item.freeformContent || '').toLowerCase().includes(q) ||
                     item.messages.some((m) => m.content.toLowerCase().includes(q)) ||
                     (item.journeySynthesis?.headline || '').toLowerCase().includes(q)
                   );
@@ -562,7 +689,7 @@ export function StickyNotesShelf({
 
                 if (catFilteredItems.length === 0) return null;
 
-                const isCollapsed = !!collapsedCategories[cat.key];
+                const isCollapsed = !!collapsedGroups[cat.key];
 
                 return (
                   <div
@@ -571,8 +698,8 @@ export function StickyNotesShelf({
                   >
                     {/* Category Accordion Header */}
                     <div
-                      onClick={() => toggleCategoryCollapse(cat.key)}
-                      className="flex items-center justify-between p-3 bg-zinc-900/80 hover:bg-zinc-800/80 cursor-pointer transition select-none"
+                      onClick={() => toggleGroupCollapse(cat.key)}
+                      className="flex items-center justify-between p-3 bg-zinc-900/80 hover:bg-zinc-850 cursor-pointer transition select-none border-b border-zinc-800/50"
                     >
                       <div className="flex items-center gap-2">
                         <span className="text-base">{cat.emoji}</span>
@@ -607,7 +734,7 @@ export function StickyNotesShelf({
 
                     {/* Accordion Content: Sticky Notes in this category */}
                     {!isCollapsed && (
-                      <div className="p-3 space-y-3 bg-zinc-950/60 border-t border-zinc-800/50">
+                      <div className="p-3 space-y-3 bg-zinc-950/60">
                         {catFilteredItems.map((item, idx) => renderStickyNoteCard(item, idx))}
                       </div>
                     )}
