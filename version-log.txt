@@ -69,3 +69,10 @@ Version 2.0.0 — Usability Hardening, Guest Vault & Solution Architecture
 * **Solution Deep Dive**: Published `SOLUTION_DOCUMENT.md` outlining the integration of Firebase, Firestore, Cloud Run, and Gemini with an in-depth 4-parameter technical rating.
 * **Landing Page Access**: Added dual primary entry buttons ("Sign In with Google" and "Explore Demo Guest Mode") for instant access.
 
+---
+
+Version 2.0.1 — Structural Guideline Refactoring
+* **Compliance**: Validated project structure against production guidelines (Full-stack API routes, Security Rules, README deployment steps).
+* **README**: Verified README.md structure matches security and deployment requirements.
+* **Database**: Confirmed owner-bound security rules in firestore.rules.
+

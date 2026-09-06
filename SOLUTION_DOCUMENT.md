@@ -180,14 +180,3 @@
 
 ---
 
-## 4. Recommended Changes Implemented in this Release
-
-1. **Guest Mode & Popup Blocker Resilience**:
-   - Added `signInAsGuest` in `lib/auth-context.tsx` and a secondary "Explore Demo Guest Mode" button on `LandingPage.tsx`.
-   - Handled browser popup-blocker exceptions with clear guidance.
-2. **Dual-Layer Local Vault & Offline Fallback**:
-   - Enhanced `lib/firestore-service.ts` to seamlessly mirror documents into local browser storage for guest sessions and offline resilience.
-3. **Non-Overlapping Sticky Shelf Layout**:
-   - Implemented dynamic desktop padding (`md:pl-72`) and mobile tap-to-dismiss backdrops, ensuring the shelf never obscures the main journaling desk.
-4. **Architectural Solution Documentation**:
-   - Created this comprehensive document (`SOLUTION_DOCUMENT.md`) detailing the exact mechanics of Firebase, Firestore, Cloud Run, and Gemini integration.
