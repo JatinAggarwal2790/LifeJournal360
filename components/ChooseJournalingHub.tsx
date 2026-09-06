@@ -362,7 +362,7 @@ export function ChooseJournalingHub({
         <div className="mb-4 text-center">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-lime-400/30 bg-lime-400/10 px-3 py-0.5 text-xs font-bold text-lime-300 backdrop-blur-md shadow-sm mb-2">
             <Sparkles className="h-3 w-3 text-lime-400" />
-            <span>ReflectAI Journaling Modalities</span>
+            <span>Life Journal 360 Modalities</span>
           </div>
 
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white max-w-2xl mx-auto leading-tight">

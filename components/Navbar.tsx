@@ -28,7 +28,7 @@ export function Navbar({ currentView, onViewChange, entriesCount = 0 }: NavbarPr
           <div>
             <div className="flex items-center gap-2">
               <span className="font-sans text-base font-bold tracking-tight text-zinc-100">
-                Reflect<span className="text-lime-400">AI</span>
+                Life Journal <span className="text-lime-400">360</span>
               </span>
               <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-zinc-800/90 border border-zinc-700/50 px-2 py-0.5 text-[10px] font-semibold text-zinc-300">
                 <Lock className="h-2.5 w-2.5 text-lime-400" />

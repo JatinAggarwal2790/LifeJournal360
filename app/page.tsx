@@ -16,7 +16,7 @@ function MainAppContent() {
         <div className="flex items-center gap-3">
           <Sparkles className="h-6 w-6 text-amber-500 animate-spin" />
           <span className="font-serif text-lg font-medium text-stone-900">
-            Initializing ReflectAI Journal...
+            Initializing Life Journal 360...
           </span>
         </div>
         <p className="mt-2 text-xs text-stone-500">Connecting to secure authentication service</p>

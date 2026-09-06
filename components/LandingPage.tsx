@@ -138,7 +138,7 @@ const JOURNAL_INDEXERS: JournalIndexer[] = [
 ];
 
 export function LandingPage() {
-  const { signInWithGoogle, loading, error, clearError } = useAuth();
+  const { signInWithGoogle, signInAsGuest, loading, error, clearError } = useAuth();
   const [selectedIndexer, setSelectedIndexer] = useState<JournalIndexer>(JOURNAL_INDEXERS[0]);
 
   return (
@@ -171,15 +171,15 @@ export function LandingPage() {
         <div className="text-center pt-2">
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/90 px-4 py-1.5 text-xs font-semibold text-zinc-300 shadow-inner backdrop-blur-md">
             <BookOpen className="h-3.5 w-3.5 text-lime-400" />
-            <span className="text-zinc-200">The All-in-One Personal Journal</span>
+            <span className="text-zinc-100 font-bold">Life Journal 360</span>
             <span className="text-zinc-600">•</span>
-            <span className="text-lime-400">Private Vault</span>
+            <span className="text-lime-400">All-in-One Private Vault</span>
           </div>
 
           <h1 className="mt-6 font-sans text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-tight">
-            One Journal for Every Chapter <br className="hidden sm:inline" />
+            Life Journal 360: <br className="hidden sm:inline" />
             <span className="bg-gradient-to-r from-lime-300 via-emerald-400 to-teal-300 bg-clip-text text-transparent">
-              of Your Life.
+              One Journal for Every Chapter.
             </span>
           </h1>
 
@@ -188,14 +188,14 @@ export function LandingPage() {
             family milestones, and voice notes. Completely private, structured or freeform.
           </p>
 
-          {/* Primary Action Button */}
+          {/* Primary Action Buttons */}
           <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <button
               id="btn-google-signin"
               type="button"
               onClick={signInWithGoogle}
               disabled={loading}
-              className="group relative flex w-full max-w-xs items-center justify-center gap-3 overflow-hidden rounded-2xl bg-zinc-100 px-6 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-lime-500/10 transition-all hover:bg-white hover:scale-[1.02] hover:shadow-lime-500/20 active:scale-[0.98] disabled:opacity-50"
+              className="group relative flex w-full sm:w-auto items-center justify-center gap-3 overflow-hidden rounded-2xl bg-zinc-100 px-6 py-3.5 text-sm font-bold text-zinc-950 shadow-lg shadow-lime-500/10 transition-all hover:bg-white hover:scale-[1.02] hover:shadow-lime-500/20 active:scale-[0.98] disabled:opacity-50"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -215,8 +215,19 @@ export function LandingPage() {
                   d="M12 23c3.24 0 5.95-1.08 7.93-2.91l-3.71-2.88c-1.07.72-2.45 1.16-4.22 1.16-3.24 0-5.99-2.21-6.86-5.19L1.62 16.02C3.51 19.84 7.39 23 12 23z"
                 />
               </svg>
-              <span>{loading ? 'Entering Vault...' : 'Open Your Journal'}</span>
+              <span>{loading ? 'Entering Vault...' : 'Sign In with Google'}</span>
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </button>
+
+            <button
+              id="btn-guest-signin"
+              type="button"
+              onClick={signInAsGuest}
+              disabled={loading}
+              className="flex w-full sm:w-auto items-center justify-center gap-2 rounded-2xl border border-zinc-800 bg-zinc-900/90 px-5 py-3.5 text-sm font-semibold text-zinc-300 shadow-sm transition hover:bg-zinc-800 hover:text-white active:scale-[0.98] disabled:opacity-50"
+            >
+              <Sparkles className="h-4 w-4 text-lime-400" />
+              <span>Explore Demo Guest Mode</span>
             </button>
           </div>
 
@@ -294,7 +305,7 @@ export function LandingPage() {
                 <div className="relative mx-auto aspect-[4/3] w-[88%] sm:w-[84%] overflow-hidden rounded-2xl border border-zinc-700/60 shadow-2xl bg-zinc-950">
                   <Image
                     src="/journal_book.jpg"
-                    alt="ReflectAI Hardcover Journal Book"
+                    alt="Life Journal 360 Hardcover Journal Book"
                     fill
                     sizes="(max-width: 768px) 100vw, 400px"
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -430,7 +441,7 @@ export function LandingPage() {
 
       {/* Clean, Simple Footer */}
       <footer className="relative z-10 mt-10 text-center text-xs text-zinc-500 font-medium">
-        ReflectAI Journal • Your Private Personal Reflection Sanctuary
+        Life Journal 360 • Your Private Personal Reflection Sanctuary
       </footer>
     </div>
   );

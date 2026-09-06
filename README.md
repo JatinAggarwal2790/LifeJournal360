@@ -1,4 +1,4 @@
-# ReflectAI Journal
+# Life Journal 360
 
 A secure, user-authenticated personal reflection and journaling web application powered by **Gemini 3.6 Flash** and **Cloud Firestore**. Built with Next.js 15 App Router, Firebase Authentication (Google Sign-In), and server-side secret isolation.
 

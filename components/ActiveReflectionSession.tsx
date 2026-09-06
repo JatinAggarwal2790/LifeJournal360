@@ -22,6 +22,7 @@ import { BulletJournalSection } from './BulletJournalSection';
 import { MultimediaSection } from './MultimediaSection';
 import { SpecializedTrackingSection } from './SpecializedTrackingSection';
 import { VoiceDictationButton } from './VoiceDictationButton';
+import { SocialSharePostModal } from './SocialSharePostModal';
 import Markdown from 'react-markdown';
 import {
   Send,
@@ -64,6 +65,7 @@ import {
   Image as ImageIcon,
   Layout,
   Mic,
+  Share2,
 } from 'lucide-react';
 
 interface ActiveReflectionSessionProps {
@@ -356,6 +358,7 @@ export function ActiveReflectionSession({
   const [showLeafSelectorModal, setShowLeafSelectorModal] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
+  const [showSocialModal, setShowSocialModal] = useState(false);
   const [writingViewMode, setWritingViewMode] = useState<'text_only' | 'split' | 'tracker_only'>('split');
   const [lastModelUsed, setLastModelUsed] = useState<string>('gemini-3.6-flash');
   const [lastPacingStage, setLastPacingStage] = useState<'crisp' | 'balanced' | 'deep'>('crisp');
@@ -1017,6 +1020,17 @@ export function ActiveReflectionSession({
           >
             <Sparkles className="h-3.5 w-3.5" />
             <span>Insights & Actions ({totalStickyNotesRight})</span>
+          </button>
+
+          {/* Share as Social / Blog Post Button */}
+          <button
+            type="button"
+            onClick={() => setShowSocialModal(true)}
+            className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-pink-500/15 via-rose-500/15 to-amber-500/15 border border-pink-500/30 px-3 py-1.5 text-xs font-bold text-pink-300 hover:bg-pink-500/25 transition shadow-sm"
+            title="Generate Instagram, Facebook, or Blog ready post from this journal"
+          >
+            <Share2 className="h-3.5 w-3.5 text-pink-400" />
+            <span>Social / Blog</span>
           </button>
 
           {/* Manual Save Button */}
@@ -2111,6 +2125,18 @@ export function ActiveReflectionSession({
         isSynthesizing={isSynthesizing}
         isOpen={isInsightsShelfOpen}
         onToggleOpen={() => setIsInsightsShelfOpen(!isInsightsShelfOpen)}
+      />
+
+      {/* Social Media & Blog Post Generator Modal */}
+      <SocialSharePostModal
+        isOpen={showSocialModal}
+        onClose={() => setShowSocialModal(false)}
+        journalTitle={title}
+        freeformContent={freeformContent}
+        messages={messages}
+        bullets={bullets}
+        mood={mood}
+        archetype={archetype}
       />
     </div>
   );

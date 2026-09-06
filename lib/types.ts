@@ -210,5 +210,44 @@ export interface ReflectionApiResponse {
   error?: string;
 }
 
+export interface SocialPostCarouselSlide {
+  slideNumber: number;
+  title: string;
+  text: string;
+}
+
+export type SocialPlatform = 'instagram' | 'facebook' | 'blog' | 'linkedin';
+export type SocialTone = 'inspiring' | 'vulnerable' | 'growth' | 'storytelling' | 'philosophical';
+export type SocialPrivacyLevel = 'clean' | 'anonymized';
+
+export interface SocialPostResponse {
+  platform: SocialPlatform;
+  headline: string;
+  hook: string;
+  body: string;
+  carouselSlides?: SocialPostCarouselSlide[];
+  suggestedHashtags?: string[];
+  callToAction: string;
+  privacyScrubSummary?: string;
+  estimatedReadTime?: string;
+  rawMarkdown: string;
+  modelUsed: string;
+  error?: string;
+}
+
+export interface SocialPostRequest {
+  platform: SocialPlatform;
+  tone?: SocialTone;
+  privacyLevel?: SocialPrivacyLevel;
+  customInstructions?: string;
+  journalTitle?: string;
+  freeformContent?: string;
+  messages?: ChatMessage[];
+  bullets?: BulletItem[];
+  mood?: string;
+  archetype?: JournalArchetype;
+}
+
+
 
 

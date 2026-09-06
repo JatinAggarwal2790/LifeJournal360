@@ -158,7 +158,7 @@ export async function POST(req: NextRequest) {
     if (freeformContent) userMessages.push(freeformContent);
     bullets.forEach((b) => userMessages.push(b.content));
 
-    const systemPrompt = `You are ReflectAI's visual Life360 & Journey Synthesizer.
+    const systemPrompt = `You are Life Journal 360's visual Journey Synthesizer.
 Your goal is to extract a vibrant, engaging, and strictly validated snapshot of ONLY the current conversation.
 
 CRITICAL BOUNDARY ENFORCEMENT RULES:

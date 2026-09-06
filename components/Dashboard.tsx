@@ -151,7 +151,7 @@ export function Dashboard() {
         onToggleOpen={() => setIsStickyShelfOpen(!isStickyShelfOpen)}
       />
 
-      <main className="flex-1 flex flex-col transition-all">
+      <main className={`flex-1 flex flex-col transition-all duration-300 ease-in-out min-w-0 ${isStickyShelfOpen ? 'md:pl-72' : 'pl-0'}`}>
         {currentView === 'choose' ? (
           <ChooseJournalingHub
             onSelectJourney={handleSelectJourney}

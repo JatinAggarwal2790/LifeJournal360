@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import type { JournalInteraction, ReflectionMode } from '@/lib/types';
 import { deleteJournalInteraction } from '@/lib/firestore-service';
 import { Life360JourneyCard } from './Life360JourneyCard';
+import { SocialSharePostModal } from './SocialSharePostModal';
 import Markdown from 'react-markdown';
 import {
   Search,
@@ -24,6 +25,7 @@ import {
   AlertTriangle,
   Flame,
   Zap,
+  Share2,
 } from 'lucide-react';
 
 interface HistoryViewProps {
@@ -43,6 +45,7 @@ export function HistoryView({
   const [selectedModeFilter, setSelectedModeFilter] = useState<string>('all');
   const [selectedMoodFilter, setSelectedMoodFilter] = useState<string>('all');
   const [activeModalEntry, setActiveModalEntry] = useState<JournalInteraction | null>(null);
+  const [socialPostEntry, setSocialPostEntry] = useState<JournalInteraction | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
 
@@ -343,6 +346,17 @@ export function HistoryView({
                     </span>
 
                     <div className="flex items-center gap-2">
+                      {/* Social Media & Blog Post Generator */}
+                      <button
+                        type="button"
+                        onClick={() => setSocialPostEntry(entry)}
+                        className="inline-flex items-center gap-1 font-bold text-pink-400 hover:text-pink-300 transition-colors text-xs"
+                        title="Generate Instagram, Facebook, or Blog ready post"
+                      >
+                        <Share2 className="h-3 w-3" />
+                        <span>Share</span>
+                      </button>
+
                       {/* Read Full Transcript Modal */}
                       <button
                         type="button"
@@ -424,6 +438,15 @@ export function HistoryView({
               </div>
 
               <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSocialPostEntry(activeModalEntry)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-pink-500/40 bg-pink-500/15 px-3 py-1.5 text-xs font-bold text-pink-300 hover:bg-pink-500/25 hover:text-pink-200 shadow-sm"
+                  title="Generate Blog, Instagram or Facebook Post from this reflection"
+                >
+                  <Share2 className="h-3.5 w-3.5 text-pink-400" />
+                  <span>Social / Blog</span>
+                </button>
                 <button
                   type="button"
                   onClick={() => handleExportMarkdown(activeModalEntry)}
@@ -525,6 +548,18 @@ export function HistoryView({
           </div>
         </div>
       )}
+
+      {/* Social Media & Blog Post Generator Modal */}
+      <SocialSharePostModal
+        isOpen={!!socialPostEntry}
+        onClose={() => setSocialPostEntry(null)}
+        journalTitle={socialPostEntry?.title}
+        freeformContent={socialPostEntry?.freeformContent}
+        messages={socialPostEntry?.messages}
+        bullets={socialPostEntry?.bullets}
+        mood={socialPostEntry?.mood}
+        archetype={socialPostEntry?.archetype}
+      />
     </div>
   );
 }

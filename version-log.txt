@@ -1,0 +1,71 @@
+# Life Journal 360 — Version Changelog
+
+Version 1.0.0 — Initial Release
+* **Core Reflection Studio**: Scaffolded interactive AI journaling companion with real-time prompt generation.
+* **Firebase Integration**: Bound Firestore cloud persistence with user-isolated access controls.
+* **Authentication**: Implemented passwordless Google sign-in and session management.
+
+---
+
+Version 1.1.0 — Architecture & Modes
+* **Reflection Modes**: Introduced Deep Reflection, Socratic Questioning, Action Planning, and Emotional Processing.
+* **Mood Tracking**: Added emotional sentiment badges and metadata filtering.
+* **Analytics**: Built visual journey synthesis metrics tracking cognitive clarity and momentum.
+
+---
+
+Version 1.2.0 — Botanical Archetypes
+* **Archetype System**: Added 9 life archetypes including Travel Explorer, Food & Nutrition, Fitness, and Parenting.
+* **Specialized Tracking**: Embedded domain-specific trackers for itineraries, sets, workouts, and milestones.
+
+---
+
+Version 1.3.0 — Offline-Ready Bullet Journals
+* **Bullet Journaling**: Implemented task checkboxes, event markers, and quick reflection notes.
+* **Multimedia Entries**: Added photo attachments, voice dictation notes, and audio transcripts.
+
+---
+
+Version 1.4.0 — Life360 Journey Synthesis
+* **Journey Cards**: Auto-generated structured cards featuring core thoughts, breakthrough insights, and next actions.
+* **Insights Shelf**: Pinned reactive sticky notes for thoughts and commitments to persistent side shelves.
+
+---
+
+Version 1.5.0 — Focused Text Desk
+* **Dual Engine**: Added switchable pure non-AI writing desk alongside the interactive AI companion.
+* **Pacing Protocol**: Implemented Crisp, Balanced, and Deep AI response pacing.
+
+---
+
+Version 1.6.0 — Resilient Model Fallbacks & Security Hardening
+* **Model Ladder**: Embedded 4-tier model fallback (`gemini-3.6-flash` -> `3.1-flash-lite` -> `flash-latest` -> `3.7-flash`).
+* **Defensive Ingestion**: Null-safe payload sanitization and undefined stripping for database writes.
+* **Rebranding**: Rebranded all UI, metadata, and persona references to Life Journal 360.
+
+---
+
+Version 1.7.0 — Social Media & Blog Post Generator
+* **Social Engine**: Built `/api/social-post` server-side route powered by Gemini with 4-tier model fallback.
+* **Multi-Platform Support**: Generated tailor-made posts for Instagram (hook, carousel slides, hashtags), Facebook, Blog/Medium, and LinkedIn.
+* **Privacy Safeguard**: Added safe anonymization mode stripping personal identifiers into relatable narratives.
+* **Live Mockup Previews**: Designed realistic phone feed cards with interactive carousel slide decks and direct text editing.
+* **Sharing Actions**: Enabled one-click clipboard copying, Markdown export, and native device Web Share API.
+
+---
+
+Version 1.8.0 — Sticky Notes Layout Optimization & UI Streamlining
+* **Non-Overlapping Layout**: Fixed main page collision by applying responsive left container indentation (`md:pl-72`) with smooth transitions when the sticky notes shelf opens.
+* **Category Redundancy Removal**: Removed redundant category badges from individual sticky note cards to eliminate visual clutter and reclaim card space.
+* **Streamlined UI Density**: Compacted drawer width (`w-72`), micro-pin graphics, single-line text excerpts, and header heights.
+* **Rapid Note Visibility**: Combined search and view controls into a single row, bringing notes directly to the top without excessive left-side scrolling.
+* **Mobile Responsiveness**: Added a dark tap-to-dismiss backdrop overlay for clean drawer behavior on small viewports.
+
+---
+
+Version 2.0.0 — Usability Hardening, Guest Vault & Solution Architecture
+* **Guest Mode Resilience**: Added `signInAsGuest` in `lib/auth-context.tsx` with fallback local sessions to bypass browser popup-blocker restrictions.
+* **Dual-Layer Vault Storage**: Enhanced `lib/firestore-service.ts` with local cache mirroring for instant rendering, guest data persistence, and offline fault tolerance.
+* **Solution Deep Dive**: Published `SOLUTION_DOCUMENT.md` outlining the integration of Firebase, Firestore, Cloud Run, and Gemini with an in-depth 4-parameter technical rating.
+* **Landing Page Access**: Added dual primary entry buttons ("Sign In with Google" and "Explore Demo Guest Mode") for instant access.
+

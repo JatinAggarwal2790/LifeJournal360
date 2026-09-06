@@ -322,7 +322,7 @@ export function Life360JourneyCard({
   <text x="50" y="465" fill="${theme.svgAccent}" font-size="12" font-weight="bold" font-family="system-ui, sans-serif">⚡ ACTION STEPS &amp; PLEDGES</text>
   ${actionsSvg}
   
-  <text x="790" y="615" fill="#71717a" font-size="10" text-anchor="end" font-family="system-ui, sans-serif">ReflectAI • Life360 Visual Synthesis</text>
+  <text x="790" y="615" fill="#71717a" font-size="10" text-anchor="end" font-family="system-ui, sans-serif">Life Journal 360 • Visual Synthesis</text>
 </svg>`.trim();
 
       const blob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });

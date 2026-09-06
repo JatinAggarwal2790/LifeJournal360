@@ -1,5 +1,5 @@
 {
-  "name": "ReflectAI Journal",
+  "name": "Life Journal 360",
   "description": "User-authenticated personal reflection and journaling application with AI insights powered by Gemini and isolated cloud storage in Firestore.",
   "requestFramePermissions": ["geolocation", "microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
