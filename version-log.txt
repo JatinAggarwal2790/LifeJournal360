@@ -71,8 +71,7 @@ Version 2.0.0 — Usability Hardening, Guest Vault & Solution Architecture
 
 ---
 
-Version 2.0.1 — Structural Guideline Refactoring
-* **Compliance**: Validated project structure against production guidelines (Full-stack API routes, Security Rules, README deployment steps).
-* **README**: Verified README.md structure matches security and deployment requirements.
-* **Database**: Confirmed owner-bound security rules in firestore.rules.
+Version 2.0.2 — AI Model Ladder Update
+* **Resilience**: Updated model fallback ladder across `app/api/synthesize`, `app/api/reflect`, and `app/api/social-post` to utilize specific requested models (`gemini-2.5-flash-lite`, `gemini-2-flash-lite`, `gemini-3.1-flash-lite`, `gemini-3.5-flash-lite`).
+
 
